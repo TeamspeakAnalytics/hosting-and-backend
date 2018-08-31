@@ -6,7 +6,7 @@ mono: none
 dotnet: 2.1.300
 
 install:
-  - dotnet restore ./src/TeamspeakAnalytics.hosting-and-backend.sln
+  - dotnet restore
 
 script:
-  - dotnet build -c Release ./src/TeamspeakAnalytics.hosting-and-backend.sln
+  - dotnet build -c Release
