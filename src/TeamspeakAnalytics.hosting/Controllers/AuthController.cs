@@ -23,7 +23,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
     }
 
     [AllowAnonymous]
-    [HttpPost("RequestJwtToken")]
+    [HttpPost("requestjwttoken")]
     public async Task<IActionResult> RequestJwtToken([FromBody]AuthRequest authRequest)
     {
       var cfg = Configuration.GetSection<ServiceConfiguration>();
