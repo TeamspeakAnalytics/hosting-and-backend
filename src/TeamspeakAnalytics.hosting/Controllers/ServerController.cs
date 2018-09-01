@@ -19,9 +19,11 @@ namespace TeamspeakAnalytics.hosting.Controllers
 
     [HttpGet("clients")]
     [ProducesResponseType(typeof(IEnumerable<GetClientInfo>), 200)]
-    public async Task<IActionResult> GetClientsAsync()
+    public async Task<IActionResult> GetClientsAsync(bool onlyVoiceClients = false)
     {
-      var clients = await Ts3DataProvider.GetClientsAsync();
+      IEnumerable<GetClientInfo> clients = await Ts3DataProvider.GetClientsAsync();
+      if (onlyVoiceClients)
+        clients = clients?.Where(c => c.Type == TeamSpeak3QueryApi.Net.Specialized.ClientType.FullClient);
       return Ok(clients ?? new List<GetClientInfo>());
     }
 
