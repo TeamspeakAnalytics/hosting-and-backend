@@ -35,10 +35,10 @@ namespace TeamspeakAnalytics.hosting
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v1", new Info { Title = "TeamspeakAnalytics - REST API", Version = "v1" });
-        c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field (Like \"Bearer asdad22\")", Name = "Authorization", Type = "apiKey" });
-        //c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-        //        { "Bearer", Enumerable.Empty<string>() },
-        //    });
+        c.AddSecurityDefinition("Bearer", new ApiKeyScheme { In = "header", Description = "Please enter JWT with Bearer into field (Like \"Bearer asdad22...\")", Name = "Authorization", Type = "apiKey" });
+        c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
+                { "Bearer", Enumerable.Empty<string>() },
+            });
       });
 
       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
