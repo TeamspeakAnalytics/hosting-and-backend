@@ -20,8 +20,8 @@ namespace TeamspeakAnalytics.ts3provider
     public CachedTS3DataProvider(TS3ServerInfo ts3ServerInfo)
     {
       _ts3ServerInfo = ts3ServerInfo ?? throw new ArgumentNullException(nameof(ts3ServerInfo));
-      if (String.IsNullOrWhiteSpace(ts3ServerInfo.Password))
-        throw new ArgumentNullException(nameof(ts3ServerInfo.Password));
+      if (String.IsNullOrWhiteSpace(ts3ServerInfo.QueryPassword))
+        throw new ArgumentNullException(nameof(ts3ServerInfo.QueryPassword));
       
       CheckConnection(true);
 
@@ -69,7 +69,7 @@ namespace TeamspeakAnalytics.ts3provider
           if (checkFunc())
             return true;
 
-          if ((_lastReceonnectTry + _ts3ServerInfo.ReconnectTimeout) > DateTime.Now)
+          if ((_lastReceonnectTry + _ts3ServerInfo.QueryReconnectTimeout) > DateTime.Now)
             return false;
 
           _lastReceonnectTry = DateTime.Now;

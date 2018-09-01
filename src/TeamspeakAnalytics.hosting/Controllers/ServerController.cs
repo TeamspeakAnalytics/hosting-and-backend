@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using TeamSpeak3QueryApi.Net.Specialized.Responses;
 using TeamspeakAnalytics.ts3provider;
 
@@ -11,7 +13,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
   [Route("api/server")]
   public class ServerController : BaseController
   {
-    public ServerController(ITS3DataProvider ts3DataProvider, TS3ServerInfo tS3ServerInfo) : base(ts3DataProvider, tS3ServerInfo)
+    public ServerController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TS3ServerInfo tS3ServerInfo) : base(configuration, ts3DataProvider, tS3ServerInfo)
     {
     }
 
