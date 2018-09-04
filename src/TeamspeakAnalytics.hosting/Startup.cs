@@ -32,32 +32,12 @@ namespace TeamspeakAnalytics.hosting
     {
       var tsCfg = Configuration.GetSection<TeamspeakConfiguration>();
       var svCfg = Configuration.GetSection<ServiceConfiguration>();
-
-      #region Database
-
-      var connStr = Configuration.GetConnectionString("ServiceDatabase");
-
-      //update db
-      var dbCtxOptsBuilkder = new DbContextOptionsBuilder<TS3AnalyticsDbContext>();
-      dbCtxOptsBuilkder.UseSqlServer(connStr, b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql"));
-      var db = new TS3AnalyticsDbContext(dbCtxOptsBuilkder.Options);
-
-      if (db.Database.GetPendingMigrations().Any())
-      {
-        //TODO: log updating database
-        db.Database.Migrate();
-      }
-      else
-      {
-        //TODO; log no update needed.
-      }
-
-      // add DI
+      
+      
       services.AddDbContext<TS3AnalyticsDbContext>(opt =>
-                opt.UseSqlServer(connStr, b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
-
-      #endregion
-
+                opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
+                                 b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
+      
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v1", new Info { Title = "TeamspeakAnalytics - REST API", Version = "v1" });
@@ -97,6 +77,23 @@ namespace TeamspeakAnalytics.hosting
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IHostingEnvironment env)
     {
+      //UpdateDatabase
+      using (var serviceScope = app.ApplicationServices.CreateScope())
+      {
+        var db = serviceScope.ServiceProvider.GetService<TS3AnalyticsDbContext>();
+
+        if (db.Database.GetPendingMigrations().Any())
+        {
+          //TODO: log updating database
+          db.Database.Migrate();
+        }
+        else
+        {
+          //TODO; log no update needed.
+        }
+      }
+
+
       //Fire up TS3DataProvider
       app.ApplicationServices.GetService<ITS3DataProvider>();
 
