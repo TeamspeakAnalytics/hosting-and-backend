@@ -4,7 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.Swagger;
-using System;
 using TeamspeakAnalytics.ts3provider;
 using TeamspeakAnalytics.hosting.Helper;
 using TeamspeakAnalytics.hosting.Configuration;
@@ -13,6 +12,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using TeamspeakAnalytics.database.mssql;
 
 namespace TeamspeakAnalytics.hosting
 {
@@ -31,7 +32,32 @@ namespace TeamspeakAnalytics.hosting
     {
       var tsCfg = Configuration.GetSection<TeamspeakConfiguration>();
       var svCfg = Configuration.GetSection<ServiceConfiguration>();
-      
+
+      #region Database
+
+      var connStr = Configuration.GetConnectionString("ServiceDatabase");
+
+      //update db
+      var dbCtxOptsBuilkder = new DbContextOptionsBuilder<TS3AnalyticsDbContext>();
+      dbCtxOptsBuilkder.UseSqlServer(connStr, b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql"));
+      var db = new TS3AnalyticsDbContext(dbCtxOptsBuilkder.Options);
+
+      if (db.Database.GetPendingMigrations().Any())
+      {
+        //TODO: log updating database
+        db.Database.Migrate();
+      }
+      else
+      {
+        //TODO; log no update needed.
+      }
+
+      // add DI
+      services.AddDbContext<TS3AnalyticsDbContext>(opt =>
+                opt.UseSqlServer(connStr, b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
+
+      #endregion
+
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v1", new Info { Title = "TeamspeakAnalytics - REST API", Version = "v1" });
