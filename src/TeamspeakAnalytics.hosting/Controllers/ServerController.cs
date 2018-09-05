@@ -27,6 +27,14 @@ namespace TeamspeakAnalytics.hosting.Controllers
       return Ok(clients ?? new List<GetClientInfo>());
     }
 
+    [HttpGet("channels")]
+    [ProducesResponseType(typeof(IEnumerable<GetChannelListInfo>), 200)]
+    public async Task<IActionResult> GetChannelsAsync()
+    {
+      IEnumerable<GetChannelListInfo> channels = await Ts3DataProvider.GetChannelAsync();
+      return Ok(channels ?? new List<GetChannelListInfo>());
+    }
+
     [HttpGet("serverinfo")]
     [ProducesResponseType(typeof(GetServerListInfo), 200)]
     [ProducesResponseType(204)]

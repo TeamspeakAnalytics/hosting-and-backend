@@ -11,6 +11,8 @@ namespace TeamspeakAnalytics.ts3provider
 
     Task<IReadOnlyList<GetClientInfo>> GetClientsAsync(bool forceReload = false);
 
+    Task<IReadOnlyList<GetChannelListInfo>> GetChannelAsync(bool forceReload = false);
+
     Task<IReadOnlyList<GetServerListInfo>> GetServerListInfosAsync(bool forceReload = false);
 
     bool CheckConnection(bool reconnect = false);

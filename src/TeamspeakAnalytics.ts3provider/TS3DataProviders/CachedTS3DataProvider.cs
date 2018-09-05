@@ -37,6 +37,11 @@ namespace TeamspeakAnalytics.ts3provider
         UpdatePeriod = new TimeSpan(0, 1, 0),
         AutoUpdate = false,
       };
+      _channel = new UpdateableInfo<IReadOnlyList<GetChannelListInfo>>(this, (tsc) => tsc.GetChannels())
+      {
+        UpdatePeriod = new TimeSpan(0, 1, 0),
+        AutoUpdate = false,
+      };
       _serverList = new UpdateableInfo<IReadOnlyList<GetServerListInfo>>(this, (tsc) => tsc.GetServers())
       {
         UpdatePeriod = new TimeSpan(0, 1, 0),
@@ -97,8 +102,16 @@ namespace TeamspeakAnalytics.ts3provider
       return await _clients.GetValueAsync();
     }
 
-    private UpdateableInfo<IReadOnlyList<GetServerListInfo>> _serverList;
+    private UpdateableInfo<IReadOnlyList<GetChannelListInfo>> _channel;
+    public async Task<IReadOnlyList<GetChannelListInfo>> GetChannelAsync(bool forceReload = false)
+    {
+      if (forceReload)
+        await _channel.UpdateAsync();
 
+      return await _channel.GetValueAsync();
+    }
+
+    private UpdateableInfo<IReadOnlyList<GetServerListInfo>> _serverList;
     public async Task<IReadOnlyList<GetServerListInfo>> GetServerListInfosAsync(bool forceReload = false)
     {
       if (forceReload)
