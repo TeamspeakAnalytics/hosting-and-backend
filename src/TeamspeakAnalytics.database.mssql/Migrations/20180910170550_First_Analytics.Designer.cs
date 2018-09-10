@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeamspeakAnalytics.database.mssql;
 
 namespace TeamspeakAnalytics.database.mssql.Migrations
 {
     [DbContext(typeof(TS3AnalyticsDbContext))]
-    partial class TS3AnalyticsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180910170550_First_Analytics")]
+    partial class First_Analytics
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
