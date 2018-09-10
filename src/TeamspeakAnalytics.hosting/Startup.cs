@@ -32,11 +32,17 @@ namespace TeamspeakAnalytics.hosting
     {
       var tsCfg = Configuration.GetSection<TeamspeakConfiguration>();
       var svCfg = Configuration.GetSection<ServiceConfiguration>();
-      
-      
+
+      services.AddCors(o => o.AddPolicy("DevPolicy", builder =>
+      {
+          builder.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+      }));
+
       services.AddDbContext<TS3AnalyticsDbContext>(opt =>
-                opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
-                                 b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
+          opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
+                            b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
       
       services.AddSwaggerGen(c =>
       {
@@ -93,7 +99,6 @@ namespace TeamspeakAnalytics.hosting
         }
       }
 
-
       //Fire up TS3DataProvider
       app.ApplicationServices.GetService<ITS3DataProvider>();
 
@@ -101,6 +106,7 @@ namespace TeamspeakAnalytics.hosting
       {
         app.UseBrowserLink();
         app.UseDeveloperExceptionPage();
+        app.UseCors("DevPolicy");
 
         app.UseSwagger();
         app.UseSwaggerUI(c =>
