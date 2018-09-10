@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Security.Policy;
+using System.Linq;
+using TeamspeakAnalytics.database.mssql;
 using TeamspeakAnalytics.hosting.Configuration;
 using TeamspeakAnalytics.hosting.Helper;
 
@@ -13,12 +12,38 @@ namespace TeamspeakAnalytics.hosting
 {
   public class Program
   {
+    private static IConfiguration _configuration; 
+
     public static void Main(string[] args)
     {
-      BuildWebHost(args).Run();
+      var webhost = BuildWebHost(args);
+      InitDB();
+
+      webhost.Run();
     }
 
-    public static IWebHost BuildWebHost(string[] args)
+    private static bool InitDB()
+    {
+      var dbContextOptionsBuilder = new DbContextOptionsBuilder<TS3AnalyticsDbContext>();
+      dbContextOptionsBuilder.UseSqlServer(_configuration.GetConnectionString("ServiceDatabase"),
+                            b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql"));
+
+      using (var db = new TS3AnalyticsDbContext(dbContextOptionsBuilder.Options))
+      {
+        if (db.Database.GetPendingMigrations().Any())
+        {
+          //TODO: log updating database
+          db.Database.Migrate();
+        }
+        else
+        {
+          //TODO; log no update needed.
+        }
+      }
+      return true;
+    }
+
+    public  static IWebHost BuildWebHost(string[] args)
     {
       var configUrl = BuildUrl();
 
@@ -28,16 +53,17 @@ namespace TeamspeakAnalytics.hosting
         .Build();
     }
 
-    public static string BuildUrl()
+    private static string BuildUrl()
     {
-      var config = new ConfigurationBuilder()
+      _configuration = new ConfigurationBuilder()
         .SetBasePath(
           //Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
           Directory.GetCurrentDirectory()
         )
         .AddJsonFile("appsettings.json")
-        .Build()
-        .GetSection<ServiceConfiguration>();
+        .Build();
+
+      var config = _configuration.GetSection<ServiceConfiguration>();
 
       var httpPrefix = config.UseHttps ? "https" : "http";
 

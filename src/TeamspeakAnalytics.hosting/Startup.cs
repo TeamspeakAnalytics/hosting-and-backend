@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TeamspeakAnalytics.database.mssql;
+using Microsoft.Extensions.Hosting;
 
 namespace TeamspeakAnalytics.hosting
 {
@@ -43,7 +44,9 @@ namespace TeamspeakAnalytics.hosting
       services.AddDbContext<TS3AnalyticsDbContext>(opt =>
           opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
                             b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
-      
+
+      services.AddSingleton<IHostedService, AnalyticsJob>();
+
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v1", new Info { Title = "TeamspeakAnalytics - REST API", Version = "v1" });
@@ -81,24 +84,8 @@ namespace TeamspeakAnalytics.hosting
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-    public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+    public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
     {
-      //UpdateDatabase
-      using (var serviceScope = app.ApplicationServices.CreateScope())
-      {
-        var db = serviceScope.ServiceProvider.GetService<TS3AnalyticsDbContext>();
-
-        if (db.Database.GetPendingMigrations().Any())
-        {
-          //TODO: log updating database
-          db.Database.Migrate();
-        }
-        else
-        {
-          //TODO; log no update needed.
-        }
-      }
-
       //Fire up TS3DataProvider
       app.ApplicationServices.GetService<ITS3DataProvider>();
 
