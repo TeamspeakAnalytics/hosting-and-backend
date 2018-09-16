@@ -3,17 +3,21 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using TeamspeakAnalytics.ts3provider;
+using Microsoft.Extensions.DependencyInjection;
+using TeamspeakAnalytics.database.mssql;
 
 namespace TeamspeakAnalytics.hosting
 {
   public class AnalyticsJob : IHostedService, IDisposable
   {
     private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+    private readonly IServiceProvider _serviceProvider;
     private readonly ITS3DataProvider _ts3DataProvider;
     private Task _executingJob;
 
-    public AnalyticsJob(ITS3DataProvider ts3DataProvider)
+    public AnalyticsJob(IServiceProvider serviceProvider, ITS3DataProvider ts3DataProvider)
     {
+      _serviceProvider = serviceProvider;
       _ts3DataProvider = ts3DataProvider;
     }
 
@@ -38,7 +42,7 @@ namespace TeamspeakAnalytics.hosting
       finally
       {
         await Task.WhenAny(
-          _executingJob, 
+          _executingJob,
           Task.Delay(Timeout.Infinite, cancellationToken)
         );
       }
@@ -51,11 +55,15 @@ namespace TeamspeakAnalytics.hosting
 
     private async Task RunBackgroundJob(CancellationToken ctx)
     {
-      while(!ctx.IsCancellationRequested)
+      while (!ctx.IsCancellationRequested)
       {
+        using (var scope = _serviceProvider.CreateScope())
+        using (var dbContext = scope.ServiceProvider.GetService<TS3AnalyticsDbContext>())
+        {
+          // Run job
+          //Console.WriteLine($"{DateTime.Now:o}Test");
+        }
         await Task.Delay(1000, ctx);
-        // Run job
-        //Console.WriteLine($"{DateTime.Now:o}Test");
       }
     }
   }
