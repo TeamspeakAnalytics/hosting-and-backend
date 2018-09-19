@@ -5,6 +5,10 @@ using System.Threading.Tasks;
 using TeamspeakAnalytics.ts3provider;
 using Microsoft.Extensions.DependencyInjection;
 using TeamspeakAnalytics.database.mssql;
+using System.Linq;
+using TeamspeakAnalytics.database.mssql.Entities;
+using TeamSpeak3QueryApi.Net.Specialized.Responses;
+using System.Collections.Generic;
 
 namespace TeamspeakAnalytics.hosting
 {
@@ -55,16 +59,76 @@ namespace TeamspeakAnalytics.hosting
 
     private async Task RunBackgroundJob(CancellationToken ctx)
     {
+      //TODO: Read from config
+      var delaySeconds = 1;
+
       while (!ctx.IsCancellationRequested)
       {
+        var timeStamp = DateTime.UtcNow;
+        var nextRun = timeStamp.AddSeconds(delaySeconds);
+        var ts3Clients = await _ts3DataProvider.GetClientsDeatailedAsync(true);
+        var ts3ClientsDbId = ts3Clients.Select(cl => cl.DatabaseId).ToList();
+
         using (var scope = _serviceProvider.CreateScope())
         using (var dbContext = scope.ServiceProvider.GetService<TS3AnalyticsDbContext>())
         {
+          var dbClients = dbContext.TS3Clients.Where(dbtscl => ts3ClientsDbId.Contains(dbtscl.DatabaseId)).ToList();
+
+          var clientTupleList = (from tsc in ts3Clients
+                                join dbtsc in dbClients
+                                on tsc.DatabaseId equals dbtsc.DatabaseId
+                                into tsclmappings
+                                from tsclmapping in tsclmappings.DefaultIfEmpty()
+                                select analyzeClientTuple(tsc, tsclmapping, dbContext, timeStamp, nextRun))
+                                .ToList();
+
+          dbContext.SaveChanges();
+
           // Run job
           //Console.WriteLine($"{DateTime.Now:o}Test");
         }
-        await Task.Delay(1000, ctx);
+
+        while (DateTime.UtcNow < nextRun)
+        {
+          await Task.Delay(500, ctx);
+        }
       }
+    }
+
+    private static Tuple<GetClientDetailedInfo, TS3Client> analyzeClientTuple(
+      GetClientDetailedInfo tscl, TS3Client dbcl, TS3AnalyticsDbContext dbContext, DateTime timeStamp, DateTime endTime)
+    {
+      if (dbcl == null)
+      {
+        dbcl = new TS3Client
+        {
+          Created = timeStamp,
+          DatabaseId = tscl.DatabaseId,
+          Id = Guid.NewGuid(),
+          UniqueIdentifier = tscl.UniqueIdentifier,
+          TS3ClientConnections = new List<TS3ClientConnection>()
+        };
+        dbContext.TS3Clients.Add(dbcl);
+      }
+
+      dbcl.ChangeDate = timeStamp;
+      dbcl.LastConnected = timeStamp;
+      dbcl.NickName = tscl.NickName;
+      dbcl.TotalConnectionCount = tscl.TotalConnectionCount;
+      dbcl.TS3Plattform = tscl.Plattform;
+      dbcl.TS3Version = tscl.Version;
+
+      dbContext.TS3ClientConnection.Add(new TS3ClientConnection
+      {
+        ChannelId = tscl.ChannelId,
+        ClientGuid = dbcl.Id,
+        Id = Guid.NewGuid(),
+        IncactiveSince = tscl.IdleTime,
+        TimeStampStart = timeStamp,
+        TimeStampEnd = endTime
+      });
+
+      return new Tuple<GetClientDetailedInfo, TS3Client>(tscl, dbcl);
     }
   }
 }

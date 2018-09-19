@@ -3,21 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace TeamspeakAnalytics.database.mssql.Migrations
 {
-    public partial class First_Analytics : Migration
+    public partial class V1_0_BaseDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropIndex(
-                name: "IX_Users_Username",
-                table: "Users");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldNullable: true);
-
             migrationBuilder.CreateTable(
                 name: "TS3Clients",
                 columns: table => new
@@ -39,12 +28,26 @@ namespace TeamspeakAnalytics.database.mssql.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    UserId = table.Column<Guid>(nullable: false),
+                    Username = table.Column<string>(nullable: false),
+                    Password = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.UserId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TS3ClientConnection",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
                     ClientGuid = table.Column<Guid>(nullable: false),
-                    TimeStamp = table.Column<DateTime>(nullable: false),
+                    TimeStampStart = table.Column<DateTime>(nullable: false),
+                    TimeStampEnd = table.Column<DateTime>(nullable: false),
                     ChannelId = table.Column<int>(nullable: false),
                     IncactiveSince = table.Column<TimeSpan>(nullable: false)
                 },
@@ -60,12 +63,6 @@ namespace TeamspeakAnalytics.database.mssql.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_Username",
-                table: "Users",
-                column: "Username",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_TS3ClientConnection_ClientGuid",
                 table: "TS3ClientConnection",
                 column: "ClientGuid");
@@ -75,6 +72,12 @@ namespace TeamspeakAnalytics.database.mssql.Migrations
                 table: "TS3Clients",
                 column: "UniqueIdentifier",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Username",
+                table: "Users",
+                column: "Username",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -83,24 +86,10 @@ namespace TeamspeakAnalytics.database.mssql.Migrations
                 name: "TS3ClientConnection");
 
             migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "TS3Clients");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Users_Username",
-                table: "Users");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Username",
-                table: "Users",
-                nullable: true,
-                oldClrType: typeof(string));
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_Username",
-                table: "Users",
-                column: "Username",
-                unique: true,
-                filter: "[Username] IS NOT NULL");
         }
     }
 }

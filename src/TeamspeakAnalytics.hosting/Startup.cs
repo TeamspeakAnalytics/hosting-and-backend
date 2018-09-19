@@ -27,8 +27,6 @@ namespace TeamspeakAnalytics.hosting
 
     public IConfiguration Configuration { get; }
 
-    // This method gets called by the runtime. Use this method to add services to the container.
-    // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
     public void ConfigureServices(IServiceCollection services)
     {
       var tsCfg = Configuration.GetSection<TeamspeakConfiguration>();
@@ -36,9 +34,9 @@ namespace TeamspeakAnalytics.hosting
 
       services.AddCors(o => o.AddPolicy("DevPolicy", builder =>
       {
-          builder.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
+        builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
       }));
 
       services.AddDbContext<TS3AnalyticsDbContext>(opt =>
@@ -83,7 +81,6 @@ namespace TeamspeakAnalytics.hosting
                         });
     }
 
-    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
     {
       //Fire up TS3DataProvider

@@ -14,12 +14,13 @@ namespace TeamspeakAnalytics.database.mssql.Entities
     [ForeignKey(nameof(TS3Client))]
     public Guid ClientGuid { get; set; }
 
-    public DateTime TimeStamp { get; set; }
+    public DateTime TimeStampStart { get; set; }
+
+    public DateTime TimeStampEnd { get; set; }
 
     public int ChannelId { get; set; }
 
     public TimeSpan IncactiveSince { get; set; }
-
 
     #region NavigationProperties
 

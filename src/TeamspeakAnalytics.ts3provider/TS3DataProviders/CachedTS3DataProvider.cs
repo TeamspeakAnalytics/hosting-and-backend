@@ -1,5 +1,7 @@
-﻿using System;
+﻿using MoreLinq.Extensions;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using TeamSpeak3QueryApi.Net;
 using TeamSpeak3QueryApi.Net.Specialized;
@@ -22,7 +24,7 @@ namespace TeamspeakAnalytics.ts3provider
       _ts3ServerInfo = ts3ServerInfo ?? throw new ArgumentNullException(nameof(ts3ServerInfo));
       if (String.IsNullOrWhiteSpace(ts3ServerInfo.QueryPassword))
         throw new ArgumentNullException(nameof(ts3ServerInfo.QueryPassword));
-      
+
       CheckConnection(true);
 
       InitUpdateableInfo();
@@ -33,6 +35,11 @@ namespace TeamspeakAnalytics.ts3provider
     private void InitUpdateableInfo()
     {
       _clients = new UpdateableInfo<IReadOnlyList<GetClientInfo>>(this, (tsc) => tsc.GetClients())
+      {
+        UpdatePeriod = new TimeSpan(0, 1, 0),
+        AutoUpdate = false,
+      };
+      _clientsDetailed = new UpdateableInfo<IReadOnlyList<GetClientDetailedInfo>>(this, (tsc) => getClientsDetailedTaskAsync(tsc))
       {
         UpdatePeriod = new TimeSpan(0, 1, 0),
         AutoUpdate = false,
@@ -49,10 +56,25 @@ namespace TeamspeakAnalytics.ts3provider
       };
     }
 
+    private async Task<IReadOnlyList<GetClientDetailedInfo>> getClientsDetailedTaskAsync(TeamSpeakClient tsc)
+    {
+      var clients = await GetClientsAsync(true);
+      var clientsFiltered = clients.Where(cl => cl.Type == ClientType.FullClient).DistinctBy(x => x.DatabaseId).ToList();
+      var detailedList = new List<GetClientDetailedInfo>();
+
+      if ((clientsFiltered?.Count ?? 0) < 1)
+        return detailedList;
+
+      foreach (var c in clientsFiltered)
+      {
+        var detailed = await tsc.GetClientInfo(c);
+        detailedList.Add(detailed);
+      }
+      return detailedList;
+    }
 
     #region ITS3DataProvider
 
-    
     public TeamSpeakClient TeamSpeakClient { get; private set; }
 
     private DateTime _lastReceonnectTry = DateTime.MinValue;
@@ -100,6 +122,15 @@ namespace TeamspeakAnalytics.ts3provider
         await _clients.UpdateAsync();
 
       return await _clients.GetValueAsync();
+    }
+
+    private UpdateableInfo<IReadOnlyList<GetClientDetailedInfo>> _clientsDetailed;
+    public async Task<IReadOnlyList<GetClientDetailedInfo>> GetClientsDeatailedAsync(bool forceReload = false)
+    {
+      if (forceReload)
+        await _clientsDetailed.UpdateAsync();
+
+      return await _clientsDetailed.GetValueAsync();
     }
 
     private UpdateableInfo<IReadOnlyList<GetChannelListInfo>> _channel;

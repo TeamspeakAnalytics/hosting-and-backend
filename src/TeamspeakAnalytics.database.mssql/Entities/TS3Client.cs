@@ -33,7 +33,7 @@ namespace TeamspeakAnalytics.database.mssql.Entities
 
     #region NavigationProperties
 
-    public virtual IEnumerable<TS3ClientConnection> TS3ClientConnections { get; set; }
+    public virtual ICollection<TS3ClientConnection> TS3ClientConnections { get; set; }
 
     #endregion
   }
