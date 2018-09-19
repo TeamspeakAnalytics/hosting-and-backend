@@ -9,6 +9,7 @@ using System.Linq;
 using TeamspeakAnalytics.database.mssql.Entities;
 using TeamSpeak3QueryApi.Net.Specialized.Responses;
 using System.Collections.Generic;
+using TeamspeakAnalytics.hosting.Configuration;
 
 namespace TeamspeakAnalytics.hosting
 {
@@ -17,12 +18,16 @@ namespace TeamspeakAnalytics.hosting
     private readonly CancellationTokenSource _cts = new CancellationTokenSource();
     private readonly IServiceProvider _serviceProvider;
     private readonly ITS3DataProvider _ts3DataProvider;
+    private readonly ServiceConfiguration _serviceConfiguration;
+    private readonly TimeSpan _delay;
     private Task _executingJob;
 
-    public AnalyticsJob(IServiceProvider serviceProvider, ITS3DataProvider ts3DataProvider)
+    public AnalyticsJob(IServiceProvider serviceProvider, ITS3DataProvider ts3DataProvider, ServiceConfiguration serviceConfiguration)
     {
       _serviceProvider = serviceProvider;
       _ts3DataProvider = ts3DataProvider;
+      _serviceConfiguration = serviceConfiguration;
+      _delay = _serviceConfiguration.AnalyticsPeriod;
     }
 
     public virtual Task StartAsync(CancellationToken cancellationToken)
@@ -59,13 +64,10 @@ namespace TeamspeakAnalytics.hosting
 
     private async Task RunBackgroundJob(CancellationToken ctx)
     {
-      //TODO: Read from config
-      var delaySeconds = 1;
-
       while (!ctx.IsCancellationRequested)
       {
         var timeStamp = DateTime.UtcNow;
-        var nextRun = timeStamp.AddSeconds(delaySeconds);
+        var nextRun = timeStamp.Add(_delay);
         var ts3Clients = await _ts3DataProvider.GetClientsDeatailedAsync(true);
         var ts3ClientsDbId = ts3Clients.Select(cl => cl.DatabaseId).ToList();
 
