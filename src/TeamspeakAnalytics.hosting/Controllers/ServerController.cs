@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using TeamSpeak3QueryApi.Net.Specialized;
 using TeamSpeak3QueryApi.Net.Specialized.Responses;
+using TeamspeakAnalytics.hosting.Configuration;
+using TeamspeakAnalytics.hosting.Contract;
 using TeamspeakAnalytics.ts3provider;
 
 namespace TeamspeakAnalytics.hosting.Controllers
@@ -15,7 +17,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
   [Route("api/server")]
   public class ServerController : BaseController
   {
-    public ServerController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TS3ServerInfo tS3ServerInfo) : base(configuration, ts3DataProvider, tS3ServerInfo)
+    public ServerController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TeamspeakConfiguration ts3Config) : base(configuration, ts3DataProvider, ts3Config)
     {
     }
 
@@ -55,7 +57,11 @@ namespace TeamspeakAnalytics.hosting.Controllers
     public async Task<IActionResult> GetServerListInfos()
     {
       var serverlistinfos = await Ts3DataProvider.GetServerListInfosAsync();
-      return Ok(serverlistinfos?.FirstOrDefault(s => s.Id == TS3ServerInfo.ServerIndex));
+      var serverInfo = serverlistinfos?.FirstOrDefault(s => s.Id == TS3Config.ServerIndex);
+      if (serverInfo == null)
+        return NoContent();
+            
+      return Ok(new DetailedTs3ServerInfo(serverInfo) { ExternalIPAdress = TS3Config.ExternalAdress });
     }
 
     /// <summary>

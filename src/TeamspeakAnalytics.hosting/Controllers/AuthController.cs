@@ -18,7 +18,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
   [Route("api/auth")]
   public class AuthController : BaseController
   {
-    public AuthController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TS3ServerInfo tS3ServerInfo) : base(configuration, ts3DataProvider, tS3ServerInfo)
+    public AuthController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TeamspeakConfiguration ts3Config) : base(configuration, ts3DataProvider, ts3Config)
     {
     }
 

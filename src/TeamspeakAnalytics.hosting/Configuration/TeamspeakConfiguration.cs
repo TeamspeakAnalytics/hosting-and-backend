@@ -8,5 +8,7 @@ namespace TeamspeakAnalytics.hosting.Configuration
 {
   public class TeamspeakConfiguration : TS3ServerInfo
   {
+
+    public string ExternalAdress { get; set; } = "127.0.0.1";
   }
 }

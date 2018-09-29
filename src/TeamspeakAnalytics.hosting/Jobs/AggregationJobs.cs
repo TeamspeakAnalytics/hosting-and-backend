@@ -67,7 +67,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
     private async Task RunBackgroundJob(CancellationToken ctx)
     {
       //wait on startup
-      await Task.Delay(1000, ctx);
+      await Task.Delay(10000, ctx);
 
       while (!ctx.IsCancellationRequested)
       {

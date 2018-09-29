@@ -34,6 +34,7 @@ namespace TeamspeakAnalytics.hosting
       var tsCfg = Configuration.GetSection<TeamspeakConfiguration>();
       var svCfg = Configuration.GetSection<ServiceConfiguration>();
       services.AddSingleton<ServiceConfiguration>(svCfg);
+      services.AddSingleton<TeamspeakConfiguration>(tsCfg);
 
       services.AddCors(o => o.AddPolicy("DevPolicy", builder =>
       {
