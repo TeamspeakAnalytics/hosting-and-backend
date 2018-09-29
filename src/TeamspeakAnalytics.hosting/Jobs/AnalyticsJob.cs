@@ -10,20 +10,24 @@ using TeamspeakAnalytics.database.mssql.Entities;
 using TeamSpeak3QueryApi.Net.Specialized.Responses;
 using System.Collections.Generic;
 using TeamspeakAnalytics.hosting.Configuration;
+using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
-namespace TeamspeakAnalytics.hosting
+namespace TeamspeakAnalytics.hosting.Jobs
 {
   public class AnalyticsJob : IHostedService, IDisposable
   {
     private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+    private readonly ILogger<AnalyticsJob> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly ITS3DataProvider _ts3DataProvider;
     private readonly ServiceConfiguration _serviceConfiguration;
     private readonly TimeSpan _delay;
     private Task _executingJob;
 
-    public AnalyticsJob(IServiceProvider serviceProvider, ITS3DataProvider ts3DataProvider, ServiceConfiguration serviceConfiguration)
+    public AnalyticsJob(ILogger<AnalyticsJob> logger, IServiceProvider serviceProvider, ITS3DataProvider ts3DataProvider, ServiceConfiguration serviceConfiguration)
     {
+      _logger = logger;
       _serviceProvider = serviceProvider;
       _ts3DataProvider = ts3DataProvider;
       _serviceConfiguration = serviceConfiguration;
@@ -64,8 +68,15 @@ namespace TeamspeakAnalytics.hosting
 
     private async Task RunBackgroundJob(CancellationToken ctx)
     {
+      //wait on startup
+      await Task.Delay(5000, ctx);
+      
       while (!ctx.IsCancellationRequested)
       {
+        var sw = new Stopwatch();
+        sw.Start();
+        _logger.LogInformation("Running Analytics Job");
+        
         var timeStamp = DateTime.UtcNow;
         var nextRun = timeStamp.Add(_delay);
         var ts3Clients = await _ts3DataProvider.GetClientsDeatailedAsync(true);
@@ -90,6 +101,14 @@ namespace TeamspeakAnalytics.hosting
           //Console.WriteLine($"{DateTime.Now:o}Test");
         }
 
+        var elapsed = sw.ElapsedMilliseconds;
+
+        if(elapsed <= 10000)
+          _logger.LogInformation($"Runned Analytics Job for {elapsed}ms");
+        else
+          _logger.LogWarning($"Runned Analytics Job for {elapsed}ms (more than 10s)");
+
+        _logger.LogInformation($"Next Analytics Job sceduled at {nextRun:o}");
         while (DateTime.UtcNow < nextRun)
         {
           await Task.Delay(500, ctx);

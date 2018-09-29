@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using TeamspeakAnalytics.database.mssql;
 using Microsoft.Extensions.Hosting;
 using TeamspeakAnalytics.ts3provider.TS3DataProviders;
+using TeamspeakAnalytics.hosting.Jobs;
 
 namespace TeamspeakAnalytics.hosting
 {
@@ -46,6 +47,7 @@ namespace TeamspeakAnalytics.hosting
                             b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
 
       services.AddSingleton<IHostedService, AnalyticsJob>();
+      services.AddSingleton<IHostedService, AggregationJobs>();
 
       services.AddSwaggerGen(c =>
       {

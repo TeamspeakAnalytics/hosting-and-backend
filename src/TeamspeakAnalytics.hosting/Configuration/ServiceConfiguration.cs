@@ -10,6 +10,7 @@ namespace TeamspeakAnalytics.hosting.Configuration
     private int _port;
     private string _hostname;
     private TimeSpan _analyticsPeriod;
+    private TimeSpan _aggregationPeriod;
 
     public string Hostname
     {
@@ -40,7 +41,7 @@ namespace TeamspeakAnalytics.hosting.Configuration
     public bool UseHttps { get; set; }
 
     public string SecurityKey { get; set; }
-
+    
     public TimeSpan AnalyticsPeriod
     {
       get => _analyticsPeriod;
@@ -53,5 +54,16 @@ namespace TeamspeakAnalytics.hosting.Configuration
       }
     }
 
+    public TimeSpan AggregationPeriod
+    {
+      get => _aggregationPeriod;
+      set
+      {
+        if (value == TimeSpan.Zero)
+          throw new ArgumentOutOfRangeException(nameof(AggregationPeriod), $"The given timespan ({value}) has to be at least 1 second");
+
+        _aggregationPeriod = value;
+      }
+    }
   }
 }
