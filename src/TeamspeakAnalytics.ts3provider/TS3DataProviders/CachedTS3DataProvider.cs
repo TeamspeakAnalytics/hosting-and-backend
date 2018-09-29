@@ -7,7 +7,7 @@ using TeamSpeak3QueryApi.Net;
 using TeamSpeak3QueryApi.Net.Specialized;
 using TeamSpeak3QueryApi.Net.Specialized.Responses;
 
-namespace TeamspeakAnalytics.ts3provider
+namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
 {
   public class CachedTS3DataProvider : ITS3DataProvider
   {
@@ -27,6 +27,7 @@ namespace TeamspeakAnalytics.ts3provider
 
       CheckConnection(true);
 
+      // inits the client
       InitUpdateableInfo();
     }
 
@@ -50,6 +51,11 @@ namespace TeamspeakAnalytics.ts3provider
         AutoUpdate = false,
       };
       _serverList = new UpdateableInfo<IReadOnlyList<GetServerListInfo>>(this, (tsc) => tsc.GetServers())
+      {
+        UpdatePeriod = new TimeSpan(0, 1, 0),
+        AutoUpdate = false,
+      };
+      _serverGroups = new UpdateableInfo<IReadOnlyList<GetServerGroupListInfo>>(this, (tsc) => tsc.GetServerGroups())
       {
         UpdatePeriod = new TimeSpan(0, 1, 0),
         AutoUpdate = false,
@@ -149,6 +155,27 @@ namespace TeamspeakAnalytics.ts3provider
         await _serverList.UpdateAsync();
 
       return await _serverList.GetValueAsync();
+    }
+
+    private UpdateableInfo<IReadOnlyList<GetServerGroupListInfo>> _serverGroups;
+    public async Task<IReadOnlyList<GetServerGroupListInfo>> GetServerGroups(bool forceReload = false)
+    {
+      if (forceReload)
+        await _serverGroups.UpdateAsync();
+
+      return await _serverGroups.GetValueAsync();
+    }
+
+    public Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(int serverGroupDatabaseId)
+    {
+      throw new NotImplementedException();
+    }
+
+    public Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(GetServerGroupListInfo serverGroup) => GetServerGroupClients(serverGroup.Id);
+
+    public Task<GetClientDetailedInfo> GetGetClientDetailedInfoAsync(int clientDbId)
+    {
+      throw new NotImplementedException();
     }
 
     #endregion

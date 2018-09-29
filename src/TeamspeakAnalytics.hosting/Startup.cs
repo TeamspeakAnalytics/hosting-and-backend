@@ -15,6 +15,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using TeamspeakAnalytics.database.mssql;
 using Microsoft.Extensions.Hosting;
+using TeamspeakAnalytics.ts3provider.TS3DataProviders;
 
 namespace TeamspeakAnalytics.hosting
 {
@@ -71,7 +72,7 @@ namespace TeamspeakAnalytics.hosting
           };
         });
 
-      services.AddTS3Provider<CachedTS3DataProvider>(tsCfg);
+      services.AddTS3Provider<LiveTS3DataProvider>(tsCfg);
       services.AddMvc()
         .AddJsonOptions(settings =>
                         {
