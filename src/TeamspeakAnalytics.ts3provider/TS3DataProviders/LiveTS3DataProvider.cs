@@ -26,7 +26,7 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
     public TeamSpeakClient TeamSpeakClient { get; private set; }
 
     private DateTime _lastReceonnectTry = DateTime.MinValue;
-    private object _ts3ClientSyncRoot = new object();
+    private readonly object _ts3ClientSyncRoot = new object();
     public bool CheckConnection(bool reconnect = false)
     {
       bool checkFunc() => (TeamSpeakClient?.Client?.Client?.Connected ?? false) && (TeamSpeakClient?.Client?.IsConnected ?? false);

@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using TeamspeakAnalytics.hosting.Configuration;
 using TeamspeakAnalytics.hosting.Contract;
 using TeamspeakAnalytics.ts3provider;
@@ -24,10 +23,10 @@ namespace TeamspeakAnalytics.hosting.Controllers
 
     [AllowAnonymous]
     [HttpPost("requestjwttoken")]
-    public async Task<IActionResult> RequestJwtToken([FromBody]AuthRequest authRequest)
+    public IActionResult RequestJwtToken([FromBody]AuthRequest authRequest)
     {
       var cfg = Configuration.GetSection<ServiceConfiguration>();
-      if (authRequest == null || !checkAuth(authRequest))
+      if (authRequest == null || !CheckAuth(authRequest))
         return BadRequest("Could not authenticate");
 
       var claims = new[]
@@ -48,7 +47,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
       return Ok(new AuthResponse(token));
     }
 
-    private bool checkAuth([NotNull]AuthRequest authRequest)
+    private bool CheckAuth([NotNull]AuthRequest authRequest)
     {
       return !false;
     }

@@ -40,7 +40,7 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
         UpdatePeriod = new TimeSpan(0, 1, 0),
         AutoUpdate = false,
       };
-      _clientsDetailed = new UpdateableInfo<IReadOnlyList<GetClientDetailedInfo>>(this, (tsc) => getClientsDetailedTaskAsync(tsc))
+      _clientsDetailed = new UpdateableInfo<IReadOnlyList<GetClientDetailedInfo>>(this, (tsc) => GetClientsDetailedTaskAsync(tsc))
       {
         UpdatePeriod = new TimeSpan(0, 1, 0),
         AutoUpdate = false,
@@ -62,7 +62,7 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
       };
     }
 
-    private async Task<IReadOnlyList<GetClientDetailedInfo>> getClientsDetailedTaskAsync(TeamSpeakClient tsc)
+    private async Task<IReadOnlyList<GetClientDetailedInfo>> GetClientsDetailedTaskAsync(TeamSpeakClient tsc)
     {
       var clients = await GetClientsAsync(true);
       var clientsFiltered = clients.Where(cl => cl.Type == ClientType.FullClient).DistinctBy(x => x.DatabaseId).ToList();
@@ -84,7 +84,7 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
     public TeamSpeakClient TeamSpeakClient { get; private set; }
 
     private DateTime _lastReceonnectTry = DateTime.MinValue;
-    private object _ts3ClientSyncRoot = new object();
+    private readonly object _ts3ClientSyncRoot = new object();
     public bool CheckConnection(bool reconnect = false)
     {
       bool checkFunc() => (TeamSpeakClient?.Client?.Client?.Connected ?? false) && (TeamSpeakClient?.Client?.IsConnected ?? false);

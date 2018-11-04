@@ -92,7 +92,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
                                 on tsc.DatabaseId equals dbtsc.DatabaseId
                                 into tsclmappings
                                 from tsclmapping in tsclmappings.DefaultIfEmpty()
-                                select analyzeClientTuple(tsc, tsclmapping, dbContext, timeStamp, nextRun))
+                                select AnalyzeClientTuple(tsc, tsclmapping, dbContext, timeStamp, nextRun))
                                 .ToList();
 
           dbContext.SaveChanges();
@@ -116,7 +116,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
       }
     }
 
-    private static Tuple<GetClientDetailedInfo, TS3Client> analyzeClientTuple(
+    private static Tuple<GetClientDetailedInfo, TS3Client> AnalyzeClientTuple(
       GetClientDetailedInfo tscl, TS3Client dbcl, TS3AnalyticsDbContext dbContext, DateTime timeStamp, DateTime endTime)
     {
       if (dbcl == null)
