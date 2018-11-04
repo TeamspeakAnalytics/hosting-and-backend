@@ -7,11 +7,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netcoreapp2.1\TeamspeakAnalytics.hosting.xml</DocumentationFile>
     <DefineConstants>TRACE;NETCOREAPP;NETCOREAPP2_1;DEBUG</DefineConstants>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <DocumentationFile>bin\Release\netcoreapp2.1\TeamspeakAnalytics.hosting.xml</DocumentationFile>
     <DefineConstants>TRACE;RELEASE;NETCOREAPP;NETCOREAPP2_1</DefineConstants>
+    <NoWarn>1701;1702;1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

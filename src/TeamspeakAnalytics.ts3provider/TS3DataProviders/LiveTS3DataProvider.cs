@@ -64,14 +64,10 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
     }
 
     public Task<IReadOnlyList<GetChannelListInfo>> GetChannelAsync(bool forceReload = false)
-    {
-      return TeamSpeakClient.GetChannels();
-    }
+      => TeamSpeakClient.GetChannels();
 
     public Task<IReadOnlyList<GetClientInfo>> GetClientsAsync(bool forceReload = false)
-    {
-      return TeamSpeakClient.GetClients();
-    }
+      => TeamSpeakClient.GetClients();
 
     public async Task<GetClientDetailedInfo> GetGetClientDetailedInfoAsync(int clientDbId)
     {
@@ -102,21 +98,16 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
     }
     
     public Task<IReadOnlyList<GetServerGroupListInfo>> GetServerGroups(bool forceReload = false)
-    {
-      return TeamSpeakClient.GetServerGroups();
-    }
+      => TeamSpeakClient.GetServerGroups();
 
     public Task<IReadOnlyList<GetServerListInfo>> GetServerListInfosAsync(bool forceReload = false)
-    {
-      return TeamSpeakClient.GetServers();
-    }
+      => TeamSpeakClient.GetServers();
 
     public Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(int serverGroupDatabaseId)
-    {
-      return TeamSpeakClient.GetServerGroupClientList(serverGroupDatabaseId);
-    }
+      => TeamSpeakClient.GetServerGroupClientList(serverGroupDatabaseId);
 
-    public Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(GetServerGroupListInfo serverGroup) => GetServerGroupClients(serverGroup.Id);
+    public Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(GetServerGroupListInfo serverGroup)
+      => GetServerGroupClients(serverGroup.Id);
 
   }
 }
