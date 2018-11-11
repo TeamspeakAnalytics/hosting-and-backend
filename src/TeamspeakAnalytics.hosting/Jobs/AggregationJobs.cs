@@ -95,7 +95,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
         _logger.LogInformation($"Next Aggregation Job sceduled at {nextRun:o}");
         while (DateTime.UtcNow < nextRun)
         {
-          await Task.Delay(500, ctx);
+          await Task.Delay(5000, ctx);
         }
       }
     }

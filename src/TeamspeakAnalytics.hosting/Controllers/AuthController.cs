@@ -49,7 +49,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
 
     private bool CheckAuth([NotNull]AuthRequest authRequest)
     {
-      return !false;
+      return true;
     }
   }
 }
