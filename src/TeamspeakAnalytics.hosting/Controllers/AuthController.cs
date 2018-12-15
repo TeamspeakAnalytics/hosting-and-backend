@@ -11,6 +11,7 @@ using TeamspeakAnalytics.ts3provider;
 using TeamspeakAnalytics.hosting.Helper;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Http;
 
 namespace TeamspeakAnalytics.hosting.Controllers
 {
@@ -23,6 +24,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
 
     [AllowAnonymous]
     [HttpPost("requestjwttoken")]
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     public IActionResult RequestJwtToken([FromBody]AuthRequest authRequest)
     {
       var cfg = Configuration.GetSection<ServiceConfiguration>();
