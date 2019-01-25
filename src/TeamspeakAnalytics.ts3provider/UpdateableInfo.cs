@@ -13,9 +13,15 @@ namespace TeamspeakAnalytics.ts3provider
     private bool _autoUpdate;
 
     internal DateTime LastUpdated { get; set; } = DateTime.MinValue;
+
     internal TimeSpan? UpdatePeriod { get; set; }
+
     //TODO: AutoUpdater
-    internal bool AutoUpdate { get => _autoUpdate; set => _autoUpdate = value; }
+    internal bool AutoUpdate
+    {
+      get => _autoUpdate;
+      set => _autoUpdate = value;
+    }
 
     internal UpdateableInfo(ITS3DataProvider provider, Func<TeamSpeakClient, Task<T>> updateFunc)
     {

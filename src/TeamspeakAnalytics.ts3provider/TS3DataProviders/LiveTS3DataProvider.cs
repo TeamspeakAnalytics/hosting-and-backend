@@ -27,9 +27,11 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
 
     private DateTime _lastReceonnectTry = DateTime.MinValue;
     private readonly object _ts3ClientSyncRoot = new object();
+
     public bool CheckConnection(bool reconnect = false)
     {
-      bool checkFunc() => (TeamSpeakClient?.Client?.Client?.Connected ?? false) && (TeamSpeakClient?.Client?.IsConnected ?? false);
+      bool checkFunc() => (TeamSpeakClient?.Client?.Client?.Connected ?? false) &&
+                          (TeamSpeakClient?.Client?.IsConnected ?? false);
 
       if (checkFunc())
         return true;
@@ -51,7 +53,6 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
           TeamSpeakClient?.Dispose();
           TeamSpeakClient = new TeamSpeakClient(_ts3ServerInfo.QueryHostname, _ts3ServerInfo.QueryPort);
           TeamSpeakClient.ConnectAndInitConnection(_ts3ServerInfo).Wait();
-
         }
       }
       catch (Exception ex) when (ex is QueryException || ex is QueryProtocolException)
@@ -83,7 +84,8 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
     public async Task<IReadOnlyList<GetClientDetailedInfo>> GetClientsDeatailedAsync(bool forceReload = false)
     {
       var clients = await GetClientsAsync(true);
-      var clientsFiltered = clients.Where(cl => cl.Type == ClientType.FullClient).DistinctBy(x => x.DatabaseId).ToList();
+      var clientsFiltered =
+        clients.Where(cl => cl.Type == ClientType.FullClient).DistinctBy(x => x.DatabaseId).ToList();
       var detailedList = new List<GetClientDetailedInfo>();
 
       if ((clientsFiltered?.Count ?? 0) < 1)
@@ -94,9 +96,10 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
         var detailed = await TeamSpeakClient.GetClientInfo(c);
         detailedList.Add(detailed);
       }
+
       return detailedList;
     }
-    
+
     public Task<IReadOnlyList<GetServerGroupListInfo>> GetServerGroups(bool forceReload = false)
       => TeamSpeakClient.GetServerGroups();
 
@@ -108,6 +111,5 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
 
     public Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(GetServerGroupListInfo serverGroup)
       => GetServerGroupClients(serverGroup.Id);
-
   }
 }

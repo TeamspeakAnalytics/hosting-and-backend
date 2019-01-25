@@ -24,7 +24,7 @@ namespace TeamspeakAnalytics.ts3provider
     Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(int serverGroupDatabaseId);
 
     Task<IReadOnlyList<GetServerGroupClientList>> GetServerGroupClients(GetServerGroupListInfo serverGroup);
-    
+
     bool CheckConnection(bool reconnect = false);
   }
 }

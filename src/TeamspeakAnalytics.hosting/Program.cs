@@ -12,7 +12,7 @@ namespace TeamspeakAnalytics.hosting
 {
   public class Program
   {
-    private static IConfiguration _configuration; 
+    private static IConfiguration _configuration;
 
     public static void Main(string[] args)
     {
@@ -26,7 +26,7 @@ namespace TeamspeakAnalytics.hosting
     {
       var dbContextOptionsBuilder = new DbContextOptionsBuilder<TS3AnalyticsDbContext>();
       dbContextOptionsBuilder.UseSqlServer(_configuration.GetConnectionString("ServiceDatabase"),
-                            b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql"));
+        b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql"));
 
       using (var db = new TS3AnalyticsDbContext(dbContextOptionsBuilder.Options))
       {
@@ -40,10 +40,11 @@ namespace TeamspeakAnalytics.hosting
           //TODO; log no update needed.
         }
       }
+
       return true;
     }
 
-    public  static IWebHost BuildWebHost(string[] args)
+    public static IWebHost BuildWebHost(string[] args)
     {
       var configUrl = BuildUrl();
 

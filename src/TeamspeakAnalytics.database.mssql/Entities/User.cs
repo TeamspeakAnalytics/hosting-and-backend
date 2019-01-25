@@ -14,6 +14,5 @@ namespace TeamspeakAnalytics.database.mssql.Entities
     public string Username { get; set; }
 
     public string Password { get; set; }
-
   }
 }

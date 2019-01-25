@@ -17,7 +17,8 @@ namespace TeamspeakAnalytics.hosting.Controllers
   [Route("api/server")]
   public class ServerController : BaseController
   {
-    public ServerController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TeamspeakConfiguration ts3Config) : base(configuration, ts3DataProvider, ts3Config)
+    public ServerController(IConfiguration configuration, ITS3DataProvider ts3DataProvider,
+      TeamspeakConfiguration ts3Config) : base(configuration, ts3DataProvider, ts3Config)
     {
     }
 
@@ -56,12 +57,12 @@ namespace TeamspeakAnalytics.hosting.Controllers
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> GetServerListInfos()
     {
-      var serverlistinfos = await Ts3DataProvider.GetServerListInfosAsync();
-      var serverInfo = serverlistinfos?.FirstOrDefault(s => s.Id == TS3Config.ServerIndex);
+      var serverListInfos = await Ts3DataProvider.GetServerListInfosAsync();
+      var serverInfo = serverListInfos?.FirstOrDefault(s => s.Id == TS3Config.ServerIndex);
       if (serverInfo == null)
         return NoContent();
-            
-      return Ok(new DetailedTs3ServerInfo(serverInfo) { ExternalIPAdress = TS3Config.ExternalAdress });
+
+      return Ok(new DetailedTs3ServerInfo(serverInfo) { ExternalIPAddress = TS3Config.ExternalAddress });
     }
 
     /// <summary>
@@ -77,8 +78,8 @@ namespace TeamspeakAnalytics.hosting.Controllers
       IEnumerable<GetServerGroupListInfo> serverGroups = await Ts3DataProvider.GetServerGroups();
 
       if (serverGroupType.HasValue)
-        serverGroups = serverGroups?.Where(g => g.ServerGroupType == (ServerGroupType)serverGroupType.Value);
-      
+        serverGroups = serverGroups?.Where(g => g.ServerGroupType == (ServerGroupType) serverGroupType.Value);
+
       return Ok(serverGroups);
     }
 
@@ -89,7 +90,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
     {
       if (groupId < 0)
         return BadRequest(nameof(groupId));
-      
+
       var clients = await Ts3DataProvider.GetServerGroupClients(groupId);
       return Ok(clients);
     }

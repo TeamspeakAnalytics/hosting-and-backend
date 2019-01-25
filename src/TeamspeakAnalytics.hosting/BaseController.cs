@@ -11,12 +11,12 @@ namespace TeamspeakAnalytics.hosting
     protected readonly TeamspeakConfiguration TS3Config;
     protected readonly IConfiguration Configuration;
 
-    public BaseController(IConfiguration configuration, ITS3DataProvider ts3DataProvider, TeamspeakConfiguration ts3Config)
+    public BaseController(IConfiguration configuration, ITS3DataProvider ts3DataProvider,
+      TeamspeakConfiguration ts3Config)
     {
       Configuration = configuration;
       Ts3DataProvider = ts3DataProvider;
       TS3Config = ts3Config;
     }
-
   }
 }

@@ -39,13 +39,13 @@ namespace TeamspeakAnalytics.hosting
       services.AddCors(o => o.AddPolicy("DevPolicy", builder =>
       {
         builder.AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader();
+          .AllowAnyMethod()
+          .AllowAnyHeader();
       }));
 
       services.AddDbContext<TS3AnalyticsDbContext>(opt =>
-          opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
-                            b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
+        opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
+          b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
 
       services.AddSingleton<IHostedService, AnalyticsJob>();
       services.AddSingleton<IHostedService, AggregationJobs>();
@@ -61,9 +61,10 @@ namespace TeamspeakAnalytics.hosting
             Name = "Authorization",
             Type = "apiKey"
           });
-        c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>> {
-                { "Bearer", Enumerable.Empty<string>() },
-            });
+        c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+        {
+          { "Bearer", Enumerable.Empty<string>() },
+        });
       });
 
       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -78,19 +79,19 @@ namespace TeamspeakAnalytics.hosting
             ValidIssuer = svCfg.Hostname,
             ValidAudience = svCfg.Hostname,
             IssuerSigningKey = new SymmetricSecurityKey(
-                  Encoding.UTF8.GetBytes(svCfg.SecurityKey))
+              Encoding.UTF8.GetBytes(svCfg.SecurityKey))
           };
         });
 
       services.AddTS3Provider<LiveTS3DataProvider>(tsCfg);
       services.AddMvc()
         .AddJsonOptions(settings =>
-                        {
-                          settings.SerializerSettings.ContractResolver = new DefaultContractResolver
-                          {
-                            NamingStrategy = new CamelCaseNamingStrategy()
-                          };
-                        });
+        {
+          settings.SerializerSettings.ContractResolver = new DefaultContractResolver
+          {
+            NamingStrategy = new CamelCaseNamingStrategy()
+          };
+        });
     }
 
     public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
@@ -105,11 +106,9 @@ namespace TeamspeakAnalytics.hosting
         app.UseCors("DevPolicy");
 
         app.UseSwagger();
-        app.UseSwaggerUI(c =>
-        {
-          c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamspeakAnalytics - REST API - V1");
-        });
+        app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamspeakAnalytics - REST API - V1"); });
       }
+
       app.UseAuthentication();
       app.UseMvc();
     }

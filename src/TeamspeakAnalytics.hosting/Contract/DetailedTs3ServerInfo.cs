@@ -19,6 +19,6 @@ namespace TeamspeakAnalytics.hosting.Contract
       Uptime = serverInfo.Uptime;
     }
 
-    public string ExternalIPAdress { get; set; }
+    public string ExternalIPAddress { get; set; }
   }
 }

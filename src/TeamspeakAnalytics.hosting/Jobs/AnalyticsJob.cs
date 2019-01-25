@@ -25,7 +25,8 @@ namespace TeamspeakAnalytics.hosting.Jobs
     private readonly TimeSpan _delay;
     private Task _executingJob;
 
-    public AnalyticsJob(ILogger<AnalyticsJob> logger, IServiceProvider serviceProvider, ITS3DataProvider ts3DataProvider, ServiceConfiguration serviceConfiguration)
+    public AnalyticsJob(ILogger<AnalyticsJob> logger, IServiceProvider serviceProvider,
+      ITS3DataProvider ts3DataProvider, ServiceConfiguration serviceConfiguration)
     {
       _logger = logger;
       _serviceProvider = serviceProvider;
@@ -70,13 +71,13 @@ namespace TeamspeakAnalytics.hosting.Jobs
     {
       //wait on startup
       await Task.Delay(5000, ctx);
-      
+
       while (!ctx.IsCancellationRequested)
       {
         var sw = new Stopwatch();
         sw.Start();
         _logger.LogInformation("Running Analytics Job");
-        
+
         var timeStamp = DateTime.UtcNow;
         var nextRun = timeStamp.Add(_delay);
         var ts3Clients = await _ts3DataProvider.GetClientsDeatailedAsync(true);
@@ -88,12 +89,12 @@ namespace TeamspeakAnalytics.hosting.Jobs
           var dbClients = dbContext.TS3Clients.Where(dbtscl => ts3ClientsDbId.Contains(dbtscl.DatabaseId)).ToList();
 
           var clientTupleList = (from tsc in ts3Clients
-                                join dbtsc in dbClients
-                                on tsc.DatabaseId equals dbtsc.DatabaseId
-                                into tsclmappings
-                                from tsclmapping in tsclmappings.DefaultIfEmpty()
-                                select AnalyzeClientTuple(tsc, tsclmapping, dbContext, timeStamp, nextRun))
-                                .ToList();
+              join dbtsc in dbClients
+                on tsc.DatabaseId equals dbtsc.DatabaseId
+                into tsclmappings
+              from tsclmapping in tsclmappings.DefaultIfEmpty()
+              select AnalyzeClientTuple(tsc, tsclmapping, dbContext, timeStamp, nextRun))
+            .ToList();
 
           dbContext.SaveChanges();
 
@@ -103,7 +104,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
 
         var elapsed = sw.ElapsedMilliseconds;
 
-        if(elapsed <= 10000)
+        if (elapsed <= 10000)
           _logger.LogInformation($"Runned Analytics Job for {elapsed}ms");
         else
           _logger.LogWarning($"Runned Analytics Job for {elapsed}ms (more than 10s)");

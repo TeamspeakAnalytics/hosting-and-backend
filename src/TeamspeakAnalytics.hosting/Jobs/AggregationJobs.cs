@@ -24,7 +24,8 @@ namespace TeamspeakAnalytics.hosting.Jobs
     private readonly TimeSpan _delay;
     private Task _executingJob;
 
-    public AggregationJobs(ILogger<AggregationJobs> logger, IServiceProvider serviceProvider, ServiceConfiguration serviceConfiguration)
+    public AggregationJobs(ILogger<AggregationJobs> logger, IServiceProvider serviceProvider,
+      ServiceConfiguration serviceConfiguration)
     {
       _logger = logger;
       _serviceProvider = serviceProvider;
@@ -36,10 +37,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
     {
       _executingJob = RunBackgroundJob(_cts.Token);
 
-      if (_executingJob.IsCanceled)
-        return _executingJob;
-
-      return Task.CompletedTask;
+      return _executingJob.IsCanceled ? _executingJob : Task.CompletedTask;
     }
 
     public virtual async Task StopAsync(CancellationToken cancellationToken)
@@ -77,11 +75,10 @@ namespace TeamspeakAnalytics.hosting.Jobs
 
         var timeStamp = DateTime.UtcNow;
         var nextRun = timeStamp.Add(_delay);
-       
+
         using (var scope = _serviceProvider.CreateScope())
         using (var dbContext = scope.ServiceProvider.GetService<TS3AnalyticsDbContext>())
         {
-          
           dbContext.SaveChanges();
         }
 
@@ -92,7 +89,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
         else
           _logger.LogWarning($"Runned Aggregation Job for {elapsed}ms (more than 60s)");
 
-        _logger.LogInformation($"Next Aggregation Job sceduled at {nextRun:o}");
+        _logger.LogInformation($"Next Aggregation Job scheduled at {nextRun:o}");
         while (DateTime.UtcNow < nextRun)
         {
           await Task.Delay(5000, ctx);

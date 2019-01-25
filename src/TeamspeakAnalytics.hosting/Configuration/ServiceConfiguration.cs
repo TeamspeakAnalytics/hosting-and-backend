@@ -29,7 +29,8 @@ namespace TeamspeakAnalytics.hosting.Configuration
       set
       {
         if (value <= 0 || value > 65536)
-          throw new ArgumentOutOfRangeException(nameof(Port), $"The given port ({value}) is not an allowed portNumber (1 - 65536)");
+          throw new ArgumentOutOfRangeException(nameof(Port),
+            $"The given port ({value}) is not an allowed portNumber (1 - 65536)");
 
         _port = value;
       }
@@ -38,14 +39,15 @@ namespace TeamspeakAnalytics.hosting.Configuration
     public bool UseHttps { get; set; }
 
     public string SecurityKey { get; set; }
-    
+
     public TimeSpan AnalyticsPeriod
     {
       get => _analyticsPeriod;
       set
       {
         if (value == TimeSpan.Zero)
-          throw new ArgumentOutOfRangeException(nameof(AnalyticsPeriod), $"The given timespan ({value}) has to be at least 1 second");
+          throw new ArgumentOutOfRangeException(nameof(AnalyticsPeriod),
+            $"The given timespan ({value}) has to be at least 1 second");
 
         _analyticsPeriod = value;
       }
@@ -57,7 +59,8 @@ namespace TeamspeakAnalytics.hosting.Configuration
       set
       {
         if (value == TimeSpan.Zero)
-          throw new ArgumentOutOfRangeException(nameof(AggregationPeriod), $"The given timespan ({value}) has to be at least 1 second");
+          throw new ArgumentOutOfRangeException(nameof(AggregationPeriod),
+            $"The given timespan ({value}) has to be at least 1 second");
 
         _aggregationPeriod = value;
       }

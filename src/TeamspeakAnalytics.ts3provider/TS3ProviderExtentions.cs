@@ -9,14 +9,15 @@ namespace TeamspeakAnalytics.ts3provider
   public static class TS3ProviderExtentions
   {
     public static IServiceCollection AddTS3Provider<T>(
-        this IServiceCollection services, 
-        TS3ServerInfo serverInfo,
-        Func<IServiceProvider, ITS3DataProvider> implementationFactory = null) 
+      this IServiceCollection services,
+      TS3ServerInfo serverInfo,
+      Func<IServiceProvider, ITS3DataProvider> implementationFactory = null)
       where T : class, ITS3DataProvider
     {
       if (string.IsNullOrWhiteSpace(serverInfo.QueryPassword))
-        throw new ArgumentException($"{nameof(serverInfo.QueryPassword)} was not set!", nameof(serverInfo.QueryPassword));
-      
+        throw new ArgumentException($"{nameof(serverInfo.QueryPassword)} was not set!",
+          nameof(serverInfo.QueryPassword));
+
 
       services.AddSingleton<TS3ServerInfo>(serverInfo);
 
@@ -27,12 +28,12 @@ namespace TeamspeakAnalytics.ts3provider
 
       return services;
     }
-    
+
     internal static async Task ConnectAndInitConnection(this TeamSpeakClient teamSpeakClient, TS3ServerInfo serverInfo)
     {
       await teamSpeakClient.Connect()
-            .ContinueWith(o => teamSpeakClient.Login(serverInfo.QueryUsername, serverInfo.QueryPassword))
-            .ContinueWith(o => teamSpeakClient.UseServer(serverInfo.ServerIndex));
+        .ContinueWith(o => teamSpeakClient.Login(serverInfo.QueryUsername, serverInfo.QueryPassword))
+        .ContinueWith(o => teamSpeakClient.UseServer(serverInfo.ServerIndex));
     }
   }
 }

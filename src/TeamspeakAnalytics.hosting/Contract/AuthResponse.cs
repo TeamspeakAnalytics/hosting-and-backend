@@ -11,7 +11,8 @@ namespace TeamspeakAnalytics.hosting.Contract
       Token = new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string Token {
+    public string Token
+    {
       get => _token;
       set => _token = value;
     }

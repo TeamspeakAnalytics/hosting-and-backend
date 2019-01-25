@@ -7,7 +7,6 @@ namespace TeamspeakAnalytics.database.mssql
   {
     public TS3AnalyticsDbContext(DbContextOptions<TS3AnalyticsDbContext> options) : base(options)
     {
-
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
