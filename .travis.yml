@@ -5,8 +5,13 @@ sudo: false
 mono: none
 dotnet: 2.1.401
 
+addons:
+  sonarcloud:
+    organization: "teamspeakanalytics"
+
 install:
   - dotnet restore
 
 script:
   - dotnet build -c Release
+  - sonar-scanner
