@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using TeamSpeak3QueryApi.Net.Specialized;
 using TeamSpeak3QueryApi.Net.Specialized.Responses;
 using TeamspeakAnalytics.hosting.Configuration;
@@ -18,7 +19,7 @@ namespace TeamspeakAnalytics.hosting.Controllers
   public class ServerController : BaseController
   {
     public ServerController(IConfiguration configuration, ITS3DataProvider ts3DataProvider,
-      TeamspeakConfiguration ts3Config) : base(configuration, ts3DataProvider, ts3Config)
+      IOptions<TeamspeakConfiguration> ts3Config) : base(configuration, ts3DataProvider, ts3Config)
     {
     }
 
@@ -58,11 +59,11 @@ namespace TeamspeakAnalytics.hosting.Controllers
     public async Task<IActionResult> GetServerListInfos()
     {
       var serverListInfos = await Ts3DataProvider.GetServerListInfosAsync();
-      var serverInfo = serverListInfos?.FirstOrDefault(s => s.Id == TS3Config.ServerIndex);
+      var serverInfo = serverListInfos?.FirstOrDefault(s => s.Id == TS3Config.Value.ServerIndex);
       if (serverInfo == null)
         return NoContent();
 
-      return Ok(new DetailedTs3ServerInfo(serverInfo) { ExternalIPAddress = TS3Config.ExternalAddress });
+      return Ok(new DetailedTs3ServerInfo(serverInfo) { ExternalIPAddress = TS3Config.Value.ExternalAddress });
     }
 
     /// <summary>

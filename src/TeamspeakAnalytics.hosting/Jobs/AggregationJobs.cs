@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using TeamspeakAnalytics.hosting.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Microsoft.Extensions.Options;
 
 namespace TeamspeakAnalytics.hosting.Jobs
 {
@@ -20,17 +21,17 @@ namespace TeamspeakAnalytics.hosting.Jobs
     private readonly CancellationTokenSource _cts = new CancellationTokenSource();
     private readonly ILogger<AggregationJobs> _logger;
     private readonly IServiceProvider _serviceProvider;
-    private readonly ServiceConfiguration _serviceConfiguration;
+    private readonly IOptions<ServiceConfiguration> _serviceConfiguration;
     private readonly TimeSpan _delay;
     private Task _executingJob;
 
     public AggregationJobs(ILogger<AggregationJobs> logger, IServiceProvider serviceProvider,
-      ServiceConfiguration serviceConfiguration)
+      IOptions<ServiceConfiguration> serviceConfiguration)
     {
       _logger = logger;
       _serviceProvider = serviceProvider;
       _serviceConfiguration = serviceConfiguration;
-      _delay = _serviceConfiguration.AggregationPeriod;
+      _delay = _serviceConfiguration.Value.AggregationPeriod;
     }
 
     public virtual Task StartAsync(CancellationToken cancellationToken)

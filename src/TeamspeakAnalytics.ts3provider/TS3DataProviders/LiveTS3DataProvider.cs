@@ -9,14 +9,15 @@ using TeamSpeak3QueryApi.Net.Specialized.Responses;
 
 namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
 {
+  /// <inheritdoc />
   public class LiveTS3DataProvider : ITS3DataProvider
   {
-    private TS3ServerInfo _ts3ServerInfo;
+    private readonly TS3ServerInfo _ts3ServerInfo;
 
     public LiveTS3DataProvider(TS3ServerInfo ts3ServerInfo)
     {
       _ts3ServerInfo = ts3ServerInfo ?? throw new ArgumentNullException(nameof(ts3ServerInfo));
-      if (String.IsNullOrWhiteSpace(ts3ServerInfo.QueryPassword))
+      if (string.IsNullOrWhiteSpace(ts3ServerInfo.QueryPassword))
         throw new ArgumentNullException(nameof(ts3ServerInfo.QueryPassword));
 
       // inits the client
@@ -25,31 +26,31 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
 
     public TeamSpeakClient TeamSpeakClient { get; private set; }
 
-    private DateTime _lastReceonnectTry = DateTime.MinValue;
+    private DateTime _lastReconnectTry = DateTime.MinValue;
     private readonly object _ts3ClientSyncRoot = new object();
 
     public bool CheckConnection(bool reconnect = false)
     {
-      bool checkFunc() => (TeamSpeakClient?.Client?.Client?.Connected ?? false) &&
+      bool CheckFunc() => (TeamSpeakClient?.Client?.Client?.Connected ?? false) &&
                           (TeamSpeakClient?.Client?.IsConnected ?? false);
 
-      if (checkFunc())
+      if (CheckFunc())
         return true;
 
       if (!reconnect)
-        return checkFunc();
+        return CheckFunc();
 
       try
       {
         lock (_ts3ClientSyncRoot)
         {
-          if (checkFunc())
+          if (CheckFunc())
             return true;
 
-          if ((_lastReceonnectTry + _ts3ServerInfo.QueryReconnectTimeout) > DateTime.Now)
+          if ((_lastReconnectTry + _ts3ServerInfo.QueryReconnectTimeout) > DateTime.Now)
             return false;
 
-          _lastReceonnectTry = DateTime.Now;
+          _lastReconnectTry = DateTime.Now;
           TeamSpeakClient?.Dispose();
           TeamSpeakClient = new TeamSpeakClient(_ts3ServerInfo.QueryHostname, _ts3ServerInfo.QueryPort);
           TeamSpeakClient.ConnectAndInitConnection(_ts3ServerInfo).Wait();
@@ -61,7 +62,7 @@ namespace TeamspeakAnalytics.ts3provider.TS3DataProviders
         return false;
       }
 
-      return checkFunc();
+      return CheckFunc();
     }
 
     public Task<IReadOnlyList<GetChannelListInfo>> GetChannelAsync(bool forceReload = false)

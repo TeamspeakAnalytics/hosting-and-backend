@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using TeamspeakAnalytics.hosting.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Microsoft.Extensions.Options;
 
 namespace TeamspeakAnalytics.hosting.Jobs
 {
@@ -21,28 +22,24 @@ namespace TeamspeakAnalytics.hosting.Jobs
     private readonly ILogger<AnalyticsJob> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly ITS3DataProvider _ts3DataProvider;
-    private readonly ServiceConfiguration _serviceConfiguration;
+    private readonly IOptions<ServiceConfiguration> _serviceConfiguration;
     private readonly TimeSpan _delay;
     private Task _executingJob;
 
     public AnalyticsJob(ILogger<AnalyticsJob> logger, IServiceProvider serviceProvider,
-      ITS3DataProvider ts3DataProvider, ServiceConfiguration serviceConfiguration)
+      ITS3DataProvider ts3DataProvider, IOptions<ServiceConfiguration> serviceConfiguration)
     {
       _logger = logger;
       _serviceProvider = serviceProvider;
       _ts3DataProvider = ts3DataProvider;
       _serviceConfiguration = serviceConfiguration;
-      _delay = _serviceConfiguration.AnalyticsPeriod;
+      _delay = _serviceConfiguration.Value.AnalyticsPeriod;
     }
 
     public virtual Task StartAsync(CancellationToken cancellationToken)
     {
       _executingJob = RunBackgroundJob(_cts.Token);
-
-      if (_executingJob.IsCanceled)
-        return _executingJob;
-
-      return Task.CompletedTask;
+      return _executingJob.IsCanceled ? _executingJob : Task.CompletedTask;
     }
 
     public virtual async Task StopAsync(CancellationToken cancellationToken)
@@ -62,10 +59,8 @@ namespace TeamspeakAnalytics.hosting.Jobs
       }
     }
 
-    public void Dispose()
-    {
-      _cts.Cancel();
-    }
+    public void Dispose() => _cts.Cancel();
+
 
     private async Task RunBackgroundJob(CancellationToken ctx)
     {
@@ -109,7 +104,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
         else
           _logger.LogWarning($"Runned Analytics Job for {elapsed}ms (more than 10s)");
 
-        _logger.LogInformation($"Next Analytics Job sceduled at {nextRun:o}");
+        _logger.LogInformation($"Next Analytics Job scheduled at {nextRun:o}");
         while (DateTime.UtcNow < nextRun)
         {
           await Task.Delay(500, ctx);

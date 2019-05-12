@@ -31,21 +31,21 @@ namespace TeamspeakAnalytics.hosting
 
     public void ConfigureServices(IServiceCollection services)
     {
-      var tsCfg = Configuration.GetSection<TeamspeakConfiguration>();
-      var svCfg = Configuration.GetSection<ServiceConfiguration>();
-      services.AddSingleton<ServiceConfiguration>(svCfg);
-      services.AddSingleton<TeamspeakConfiguration>(tsCfg);
+      var tsCfgSection = Configuration.GetSection("TeamspeakConfiguration");
+      services.Configure<TeamspeakConfiguration>(tsCfgSection);
+      var tsCfg = tsCfgSection.Get<TeamspeakConfiguration>();
 
+      var svCfgSection = Configuration.GetSection("ServiceConfiguration");
+      services.Configure<ServiceConfiguration>(svCfgSection);
+      var svCfg = svCfgSection.Get<ServiceConfiguration>();
+      
+      // Only used for development
       services.AddCors(o => o.AddPolicy("DevPolicy", builder =>
       {
         builder.AllowAnyOrigin()
           .AllowAnyMethod()
           .AllowAnyHeader();
       }));
-
-      services.AddDbContext<TS3AnalyticsDbContext>(opt =>
-        opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
-          b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
 
       services.AddSingleton<IHostedService, AnalyticsJob>();
       services.AddSingleton<IHostedService, AggregationJobs>();
@@ -57,7 +57,7 @@ namespace TeamspeakAnalytics.hosting
           new ApiKeyScheme
           {
             In = "header",
-            Description = "Please enter JWT with Bearer into field (Like \"Bearer asdad22...\")",
+            Description = "Please enter JWT with Bearer into field (Like \"Bearer acfcaf22...\")",
             Name = "Authorization",
             Type = "apiKey"
           });
@@ -66,7 +66,6 @@ namespace TeamspeakAnalytics.hosting
           { "Bearer", Enumerable.Empty<string>() },
         });
       });
-
       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
@@ -83,7 +82,12 @@ namespace TeamspeakAnalytics.hosting
           };
         });
 
+      services.AddDbContext<TS3AnalyticsDbContext>(opt =>
+        opt.UseSqlServer(Configuration.GetConnectionString("ServiceDatabase"),
+          b => b.MigrationsAssembly("TeamspeakAnalytics.database.mssql")));
+      
       services.AddTS3Provider<LiveTS3DataProvider>(tsCfg);
+      
       services.AddMvc()
         .AddJsonOptions(settings =>
         {
