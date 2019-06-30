@@ -3,7 +3,7 @@ dist: trusty
 sudo: false
 
 mono: none
-dotnet: 2.2.300
+dotnet: 2.2
 
 addons:
   sonarcloud:
