@@ -91,7 +91,7 @@ namespace TeamspeakAnalytics.hosting.Jobs
               select AnalyzeClientTuple(tsc, tsclmapping, dbContext, timeStamp, nextRun))
             .ToList();
 
-          dbContext.SaveChanges();
+          await dbContext.SaveChangesAsync(CancellationToken.None);
 
           // Run job
           //Console.WriteLine($"{DateTime.Now:o}Test");

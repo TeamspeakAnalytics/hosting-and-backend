@@ -22,13 +22,13 @@ namespace TeamspeakAnalytics.database.mssql.Entities
 
     public string TS3Plattform { get; set; }
 
-    public DateTime Created { get; set; }
+    public DateTimeOffset Created { get; set; }
 
-    public DateTime LastConnected { get; set; }
+    public DateTimeOffset LastConnected { get; set; }
 
     public int TotalConnectionCount { get; set; }
 
-    public DateTime ChangeDate { get; set; }
+    public DateTimeOffset ChangeDate { get; set; }
 
 
     #region NavigationProperties

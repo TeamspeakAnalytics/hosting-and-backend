@@ -14,9 +14,9 @@ namespace TeamspeakAnalytics.database.mssql.Entities
     [ForeignKey(nameof(TS3Client))]
     public Guid ClientGuid { get; set; }
 
-    public DateTime TimeStampStart { get; set; }
+    public DateTimeOffset TimeStampStart { get; set; }
 
-    public DateTime TimeStampEnd { get; set; }
+    public DateTimeOffset TimeStampEnd { get; set; }
 
     public int ChannelId { get; set; }
 

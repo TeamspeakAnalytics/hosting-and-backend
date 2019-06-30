@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TeamspeakAnalytics.database.mssql;
 
 namespace TeamspeakAnalytics.database.mssql.Migrations
 {
     [DbContext(typeof(TS3AnalyticsDbContext))]
-    partial class TS3AnalyticsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20190628192054_ChangedToDateTimeOffset")]
+    partial class ChangedToDateTimeOffset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
