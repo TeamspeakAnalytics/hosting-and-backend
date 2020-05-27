@@ -23,7 +23,7 @@
   <ItemGroup>
     <!-- It is not recommended to specefy the version of Microsoft.AspNetCore.All -->
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.2.8" />
-    <PackageReference Include="JetBrains.Annotations" Version="2019.1.1" />
+    <PackageReference Include="JetBrains.Annotations" Version="2020.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.2.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
