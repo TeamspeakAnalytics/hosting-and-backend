@@ -1,4 +1,4 @@
 # backend
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=TeamspeakAnalytics/hosting-and-backend)](https://dependabot.com) [![Travis Build Status](https://travis-ci.org/TeamspeakAnalytics/hosting-and-backend.svg?branch=master)](https://travis-ci.org/TeamspeakAnalytics/hosting-and-backend)
+![.NET Core](https://github.com/TeamspeakAnalytics/hosting-and-backend/workflows/.NET%20Core/badge.svg)
 
 C# .NetCore Backend
