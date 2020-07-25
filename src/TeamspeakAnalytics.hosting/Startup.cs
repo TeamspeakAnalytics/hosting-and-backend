@@ -7,14 +7,16 @@ using Swashbuckle.AspNetCore.Swagger;
 using TeamspeakAnalytics.ts3provider;
 using TeamspeakAnalytics.hosting.Helper;
 using TeamspeakAnalytics.hosting.Configuration;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using TeamspeakAnalytics.database.mssql;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using TeamspeakAnalytics.ts3provider.TS3DataProviders;
 using TeamspeakAnalytics.hosting.Jobs;
 
@@ -52,19 +54,17 @@ namespace TeamspeakAnalytics.hosting
 
       services.AddSwaggerGen(c =>
       {
-        c.SwaggerDoc("v1", new Info { Title = "TeamspeakAnalytics - REST API", Version = "v1" });
-        c.AddSecurityDefinition("Bearer",
-          new ApiKeyScheme
+        c.SwaggerDoc("v1", new OpenApiInfo { Title = "TeamspeakAnalytics - REST API", Version = "v1" });
+        c.AddSecurityDefinition("Bearer", 
+          new OpenApiSecurityScheme
           {
-            In = "header",
+            In = ParameterLocation.Header,
             Description = "Please enter JWT with Bearer into field (Like \"Bearer acfcaf22...\")",
             Name = "Authorization",
-            Type = "apiKey"
+            Type = SecuritySchemeType.ApiKey
+
           });
-        c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
-        {
-          { "Bearer", Enumerable.Empty<string>() },
-        });
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement { });
       });
       services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -88,13 +88,10 @@ namespace TeamspeakAnalytics.hosting
       
       services.AddTS3Provider<LiveTS3DataProvider>(tsCfg);
       
-      services.AddMvc()
+      services.AddMvc(options => options.EnableEndpointRouting = false)
         .AddJsonOptions(settings =>
         {
-          settings.SerializerSettings.ContractResolver = new DefaultContractResolver
-          {
-            NamingStrategy = new CamelCaseNamingStrategy()
-          };
+          settings.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
         });
     }
 
@@ -105,7 +102,6 @@ namespace TeamspeakAnalytics.hosting
 
       if (env.IsDevelopment())
       {
-        app.UseBrowserLink();
         app.UseDeveloperExceptionPage();
         app.UseCors("DevPolicy");
 
